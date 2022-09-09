@@ -12,6 +12,18 @@ export class EmailAlreadyTaken extends Result<DomainError> {
 	}
 }
 
+export class EmailInvalid extends Result<DomainError> {
+	private constructor(email: string) {
+		super(false, {
+			message: `The email "${email}" is invalid.`,
+		})
+	}
+
+	public static create(email: string): EmailInvalid {
+		return new EmailInvalid(email)
+	}
+}
+
 export class InvalidRequestParams extends Result<DomainError> {
 	private constructor(params: string[]) {
 		super(false, {

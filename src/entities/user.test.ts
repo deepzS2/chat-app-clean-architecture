@@ -14,14 +14,4 @@ describe('User entity', () => {
 		expect(entity.id).not.toBeNull()
 		expect(entity.password).not.toBe('password')
 	})
-
-	it('Should not create a new user entity if email is invalid', () => {
-		expect(() =>
-			User.create({
-				email: 'emailinvalid.com',
-				password: 'password',
-				username: 'username',
-			})
-		).toThrow()
-	})
 })

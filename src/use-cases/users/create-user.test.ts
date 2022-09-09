@@ -3,7 +3,7 @@ import { it, describe, expect } from 'vitest'
 import { InMemoryUsersRepository } from '@repositories/in-memory/in-memory-users-repository'
 
 import { CreateUser } from './create-user'
-import { EmailAlreadyTaken } from './errors'
+import { EmailAlreadyTaken, EmailInvalid } from './errors'
 
 describe('Create user', () => {
 	it('Should create a new valid user', async () => {
@@ -17,6 +17,20 @@ describe('Create user', () => {
 		})
 
 		expect(result.isRight()).toBeTruthy()
+	})
+
+	it('Should not create a new user if email is invalid', async () => {
+		const usersRepository = new InMemoryUsersRepository()
+		const createUser = new CreateUser(usersRepository)
+
+		const result = await createUser.execute({
+			email: 'wrongmail@.com',
+			password: 'password',
+			username: 'username',
+		})
+
+		expect(result.isLeft()).toBeTruthy()
+		expect(result.value).toBeInstanceOf(EmailInvalid)
 	})
 
 	it('Should not create a new user if email is already in use', async () => {

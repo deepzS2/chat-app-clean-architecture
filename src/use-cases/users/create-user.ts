@@ -1,8 +1,10 @@
+import { validate as validateEmail } from 'email-validator'
+
 import { User } from '@entities/user'
 import { UsersRepository } from '@repositories/users-repository'
 import { Either, left, Result, right } from '@shared'
 
-import { EmailAlreadyTaken } from './errors'
+import { EmailAlreadyTaken, EmailInvalid } from './errors'
 
 interface CreateUserRequest {
 	username: string
@@ -10,7 +12,7 @@ interface CreateUserRequest {
 	password: string
 }
 
-type CreateUserResponse = Either<EmailAlreadyTaken, Result<User>>
+type CreateUserResponse = Either<EmailAlreadyTaken | EmailInvalid, Result<User>>
 
 export class CreateUser {
 	constructor(private readonly userRepository: UsersRepository) {}
@@ -20,6 +22,10 @@ export class CreateUser {
 		password,
 		username,
 	}: CreateUserRequest): Promise<CreateUserResponse> {
+		if (!validateEmail(email)) {
+			return left(EmailInvalid.create(email))
+		}
+
 		const userExists = await this.userRepository.findByEmail(email)
 
 		if (userExists) return left(EmailAlreadyTaken.create(email))

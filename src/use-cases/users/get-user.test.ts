@@ -26,7 +26,7 @@ describe('Get user', () => {
 		})
 
 		expect(getById.isRight()).toBeTruthy()
-		expect(getByEmail.isRight()).toBeTruthy
+		expect(getByEmail.isRight()).toBeTruthy()
 	})
 
 	it('Should not succeed if user not found', async () => {

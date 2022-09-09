@@ -29,7 +29,7 @@ export class InMemoryUsersRepository implements UsersRepository {
 
 		if (userIndex === -1) throw new Error('User not found...')
 
-		this.users[userIndex] = Object.assign(this.users[userIndex], user)
+		this.users[userIndex].update(user)
 	}
 
 	async delete(id: string): Promise<void> {

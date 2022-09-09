@@ -30,6 +30,13 @@ export class User {
 		return this.props.password
 	}
 
+	update(propsToUpdate: Partial<Omit<UserProps, 'id'>>) {
+		if (propsToUpdate.email && !validateEmail(propsToUpdate.email))
+			throw new Error('Invalid email!')
+
+		this.props = Object.assign(this.props, propsToUpdate)
+	}
+
 	private static hash(data: string) {
 		const salt = bcrypt.genSaltSync(this.SALT_ROUND)
 
