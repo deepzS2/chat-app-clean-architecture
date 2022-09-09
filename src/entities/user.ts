@@ -2,6 +2,8 @@ import bcrypt from 'bcrypt'
 import { validate as validateEmail } from 'email-validator'
 import { v4 as uuid } from 'uuid'
 
+import { Result } from '@shared'
+
 interface UserProps {
 	id?: string
 	username: string
@@ -43,13 +45,19 @@ export class User {
 		return bcrypt.hashSync(data, salt)
 	}
 
-	static create(props: UserProps) {
-		if (!validateEmail(props.email)) throw new Error('Invalid email!')
+	static create(props: UserProps): Result<User> {
+		if (!validateEmail(props.email)) {
+			return Result.fail({
+				email: `Email "${props.email}" is invalid`,
+			})
+		}
 
-		return new User({
-			...props,
-			id: props.id || uuid(),
-			password: this.hash(props.password),
-		})
+		return Result.ok(
+			new User({
+				...props,
+				id: props.id || uuid(),
+				password: this.hash(props.password),
+			})
+		)
 	}
 }

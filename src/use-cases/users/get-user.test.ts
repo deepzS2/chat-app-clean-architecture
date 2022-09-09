@@ -3,7 +3,7 @@ import { it, describe, expect } from 'vitest'
 import { User } from '@entities/user'
 import { InMemoryUsersRepository } from '@repositories/in-memory/in-memory-users-repository'
 
-import { UserNotFound } from './errors'
+import { UserMissingParams, UserNotFound } from './errors'
 import { GetUser } from './get-user'
 
 describe('Get user', () => {
@@ -15,7 +15,7 @@ describe('Get user', () => {
 			email: 'email@email.com',
 			password: 'password',
 			username: 'username',
-		})
+		}).getValue()
 		await repository.create(user)
 
 		const getById = await getUser.execute({
@@ -44,5 +44,18 @@ describe('Get user', () => {
 		expect(getByEmail.isLeft()).toBeTruthy()
 		expect(getById.value).toBeInstanceOf(UserNotFound)
 		expect(getByEmail.value).toBeInstanceOf(UserNotFound)
+	})
+
+	it('Should return error if ID or email not provided', async () => {
+		const repository = new InMemoryUsersRepository()
+		const getUser = new GetUser(repository)
+
+		const result = await getUser.execute({
+			email: undefined,
+			id: undefined,
+		})
+
+		expect(result.isLeft()).toBeTruthy()
+		expect(result.value).toBeInstanceOf(UserMissingParams)
 	})
 })

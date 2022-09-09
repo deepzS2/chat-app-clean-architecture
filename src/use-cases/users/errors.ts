@@ -1,3 +1,4 @@
+import { User } from '@entities/user'
 import { DomainError, Result } from '@shared'
 
 export class EmailAlreadyTaken extends Result<DomainError> {
@@ -12,27 +13,32 @@ export class EmailAlreadyTaken extends Result<DomainError> {
 	}
 }
 
-export class EmailInvalid extends Result<DomainError> {
-	private constructor(email: string) {
+export class UserMissingParams extends Result<DomainError> {
+	private constructor(choice: boolean, params: Array<keyof User>) {
 		super(false, {
-			message: `The email "${email}" is invalid.`,
+			message: `Missing parameters: ${params.join(choice ? ' or ' : ', ')}`,
 		})
 	}
 
-	public static create(email: string): EmailInvalid {
-		return new EmailInvalid(email)
+	public static create(...params: Array<keyof User>): UserMissingParams {
+		return new UserMissingParams(false, params)
+	}
+
+	public static createChoice(...params: Array<keyof User>): UserMissingParams {
+		return new UserMissingParams(true, params)
 	}
 }
 
-export class InvalidRequestParams extends Result<DomainError> {
-	private constructor(params: string[]) {
+export class InvalidUserProps extends Result<DomainError> {
+	private constructor(propsInvalid: User) {
 		super(false, {
-			message: `Invalid request parameters: ${params.join(', ')}`,
+			message: `Invalid properties`,
+			error: propsInvalid,
 		})
 	}
 
-	public static create(...params: string[]): InvalidRequestParams {
-		return new InvalidRequestParams(params)
+	public static create(propsInvalid: User): InvalidUserProps {
+		return new InvalidUserProps(propsInvalid)
 	}
 }
 

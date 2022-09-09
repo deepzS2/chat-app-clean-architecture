@@ -10,8 +10,19 @@ describe('User entity', () => {
 			username: 'username',
 		})
 
-		expect(entity).toBeInstanceOf(User)
-		expect(entity.id).not.toBeNull()
-		expect(entity.password).not.toBe('password')
+		expect(entity.isSuccess).toBeTruthy()
+		expect(entity.getValue()).toBeInstanceOf(User)
+		expect(entity.getValue().password).not.toBe('password')
+	})
+
+	it('Should not create a new user entity if email is invalid', () => {
+		const entity = User.create({
+			email: 'email-invalid@.com',
+			password: 'password',
+			username: 'username',
+		})
+
+		expect(entity.isFailure).toBeTruthy()
+		expect(entity.getValue().email).not.toBeNull()
 	})
 })

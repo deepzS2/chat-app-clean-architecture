@@ -3,7 +3,7 @@ import { it, describe, expect } from 'vitest'
 import { InMemoryUsersRepository } from '@repositories/in-memory/in-memory-users-repository'
 
 import { CreateUser } from './create-user'
-import { EmailAlreadyTaken, EmailInvalid } from './errors'
+import { EmailAlreadyTaken } from './errors'
 
 describe('Create user', () => {
 	it('Should create a new valid user', async () => {
@@ -30,7 +30,7 @@ describe('Create user', () => {
 		})
 
 		expect(result.isLeft()).toBeTruthy()
-		expect(result.value).toBeInstanceOf(EmailInvalid)
+		expect(result.value.error).not.toBeNull()
 	})
 
 	it('Should not create a new user if email is already in use', async () => {

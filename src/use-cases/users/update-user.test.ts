@@ -3,7 +3,6 @@ import { it, describe, expect } from 'vitest'
 import { User } from '@entities/user'
 import { InMemoryUsersRepository } from '@repositories/in-memory/in-memory-users-repository'
 
-import { UserNotFound } from './errors'
 import { UpdateUser } from './update-user'
 
 describe('Update user', () => {
@@ -15,7 +14,7 @@ describe('Update user', () => {
 			email: 'email@email.com',
 			password: 'password',
 			username: 'username',
-		})
+		}).getValue()
 		await repository.create(user)
 
 		const result = await updateUser.execute({
