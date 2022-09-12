@@ -30,7 +30,23 @@ export class Message {
 		return this.props.author!
 	}
 
+	update(propsToUpdate: Partial<Omit<MessageProps, 'id'>>) {
+		this.props = Object.assign(this.props, propsToUpdate)
+	}
+
 	static create(props: MessageProps): Result<Message> {
+		if (!props.content) {
+			return Result.fail({
+				content: 'Please provide a content to create a message',
+			})
+		}
+
+		if (!props.authorId) {
+			return Result.fail({
+				authorId: 'Please provide an author to create a message',
+			})
+		}
+
 		return Result.ok(
 			new Message({
 				...props,

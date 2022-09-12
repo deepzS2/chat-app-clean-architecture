@@ -52,6 +52,18 @@ export class User {
 			})
 		}
 
+		if (!props.password) {
+			return Result.fail({
+				password: `Please provide a password`,
+			})
+		}
+
+		if (!props.username) {
+			return Result.fail({
+				username: `Please provide a username`,
+			})
+		}
+
 		return Result.ok(
 			new User({
 				...props,
