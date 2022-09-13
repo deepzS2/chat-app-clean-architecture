@@ -57,3 +57,27 @@ export class UserNotFound extends Result<DomainError> {
 		return new UserNotFound(`User not found with email "${email}"`)
 	}
 }
+
+export class InvalidCredentials extends Result<DomainError> {
+	constructor() {
+		super(false, {
+			message: 'Email or password invalid',
+		})
+	}
+
+	public static create(): InvalidCredentials {
+		return new InvalidCredentials()
+	}
+}
+
+export class SessionTerminated extends Result<DomainError> {
+	constructor() {
+		super(false, {
+			message: 'Token expired or user does not exists anymore...',
+		})
+	}
+
+	public static create(): SessionTerminated {
+		return new SessionTerminated()
+	}
+}

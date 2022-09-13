@@ -39,6 +39,10 @@ export class User {
 		this.props = Object.assign(this.props, propsToUpdate)
 	}
 
+	comparePassword(password: string) {
+		return bcrypt.compareSync(password, this.password)
+	}
+
 	private static hash(data: string) {
 		const salt = bcrypt.genSaltSync(this.SALT_ROUND)
 
