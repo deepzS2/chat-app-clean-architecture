@@ -1,28 +1,22 @@
+import { BaseUseCase } from '@core/base-usecase'
 import { User } from '@entities/user'
 import { UsersRepository } from '@repositories/users-repository'
 import { Either, left, Result, right } from '@shared'
 
 import { EmailAlreadyTaken, InvalidUserProps } from './errors'
 
-interface CreateUserRequest {
+interface Request {
 	username: string
 	email: string
 	password: string
 }
 
-type CreateUserResponse = Either<
-	EmailAlreadyTaken | InvalidUserProps,
-	Result<User>
->
+type Response = Either<EmailAlreadyTaken | InvalidUserProps, Result<User>>
 
-export class CreateUser {
+export class CreateUser implements BaseUseCase<Request, Response> {
 	constructor(private readonly userRepository: UsersRepository) {}
 
-	async execute({
-		email,
-		password,
-		username,
-	}: CreateUserRequest): Promise<CreateUserResponse> {
+	async execute({ email, password, username }: Request): Promise<Response> {
 		const userExists = await this.userRepository.findByEmail(email)
 
 		if (userExists) return left(EmailAlreadyTaken.create(email))
