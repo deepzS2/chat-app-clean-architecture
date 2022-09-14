@@ -1,4 +1,13 @@
 import { BaseRepository } from '@core/base-repository'
-import { Message } from '@entities/message'
+import { Message, MessageProps } from '@entities/message'
 
-export type MessagesRepository = BaseRepository<Message>
+export interface MessagesRepository extends BaseRepository<Message> {
+	getAllOrdered(
+		key: keyof MessageProps,
+		orderBy: 'asc' | 'desc',
+		options: {
+			page: number
+			limitPerPage: number
+		}
+	): Promise<Message[]>
+}

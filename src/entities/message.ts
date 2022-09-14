@@ -4,10 +4,11 @@ import { Result } from '@shared'
 
 import { User } from './user'
 
-interface MessageProps {
+export interface MessageProps {
 	id?: string
 	content: string
 	authorId: string
+	createdAt?: Date
 	author?: User
 }
 
@@ -28,6 +29,10 @@ export class Message {
 
 	get author() {
 		return this.props.author!
+	}
+
+	get createdAt() {
+		return this.props.createdAt!
 	}
 
 	update(propsToUpdate: Partial<Omit<MessageProps, 'id'>>) {
@@ -51,6 +56,7 @@ export class Message {
 			new Message({
 				...props,
 				id: props.id || uuid(),
+				createdAt: props.createdAt || new Date(),
 			})
 		)
 	}

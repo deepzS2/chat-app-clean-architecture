@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid'
 
 import { Result } from '@shared'
 
-interface UserProps {
+export interface UserProps {
 	id?: string
 	username: string
 	email: string

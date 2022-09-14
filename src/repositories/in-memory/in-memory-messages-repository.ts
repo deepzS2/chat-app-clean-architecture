@@ -1,4 +1,5 @@
-import { Message } from '@entities/message'
+import { Message, MessageProps } from '@entities/message'
+import { User } from '@entities/user'
 import { MessagesRepository } from '@repositories/messages-repository'
 
 export class InMemoryMessagesRepository implements MessagesRepository {
@@ -10,6 +11,35 @@ export class InMemoryMessagesRepository implements MessagesRepository {
 
 	async getAll(): Promise<Message[]> {
 		return this.messages
+	}
+
+	async getAllOrdered(
+		key: keyof MessageProps,
+		orderBy: 'asc' | 'desc',
+		options: { page: number; limitPerPage: number }
+	): Promise<Message[]> {
+		const startSlice = options.limitPerPage * (options.page - 1)
+		const endSlice = options.limitPerPage * options.page
+
+		if (startSlice > this.messages.length) return []
+
+		const sortMultiplier = orderBy === 'asc' ? 1 : -1
+		const page = this.messages.slice(startSlice, endSlice)
+
+		return page.sort((a, b) => {
+			let aKey: string | number | Date | User = a[key]
+			let bKey: string | number | Date | User = b[key]
+
+			if (aKey instanceof User || bKey instanceof User) return 0
+			if (aKey instanceof Date && bKey instanceof Date) {
+				aKey = aKey.getTime()
+				bKey = bKey.getTime()
+			}
+
+			if (aKey > bKey) return 1 * sortMultiplier
+			if (aKey < bKey) return -1 * sortMultiplier
+			return 0
+		})
 	}
 
 	async findById(id: string): Promise<Message | null> {
