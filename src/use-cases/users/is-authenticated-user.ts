@@ -1,3 +1,5 @@
+import { JwtPayload } from 'jsonwebtoken'
+
 import { BaseUseCase } from '@core/base-usecase'
 import { UsersRepository } from '@repositories/users-repository'
 import { Either, JsonWebToken, left, Result, right } from '@shared'
@@ -8,7 +10,7 @@ interface Request {
 	token: string
 }
 
-type Response = Either<SessionTerminated, Result<boolean>>
+type Response = Either<SessionTerminated, Result<JwtPayload>>
 
 export class IsAuthenticatedUser implements BaseUseCase<Request, Response> {
 	constructor(
@@ -26,6 +28,6 @@ export class IsAuthenticatedUser implements BaseUseCase<Request, Response> {
 
 		if (!userExists) return left(SessionTerminated.create())
 
-		return right(Result.ok(true))
+		return right(result)
 	}
 }
