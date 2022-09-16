@@ -23,10 +23,10 @@ export class MongoDbUsersRepository implements UsersRepository {
 
 		if (!result) return null
 
-		return User.create({
-			...result,
+		return User.fromModel({
+			...result.toObject(),
 			id: result._id.toString(),
-		}).getValue()
+		})
 	}
 
 	async create(user: User): Promise<void> {
@@ -41,10 +41,10 @@ export class MongoDbUsersRepository implements UsersRepository {
 		const results = await this.model.find()
 
 		return results.map((result) =>
-			User.create({
-				...result,
+			User.fromModel({
+				...result.toObject(),
 				id: result._id.toString(),
-			}).getValue()
+			})
 		)
 	}
 
@@ -53,10 +53,10 @@ export class MongoDbUsersRepository implements UsersRepository {
 
 		if (!result) return null
 
-		return User.create({
-			...result,
+		return User.fromModel({
+			...result.toObject(),
 			id: result._id.toString(),
-		}).getValue()
+		})
 	}
 
 	async update(id: string, entity: Partial<User>): Promise<void> {

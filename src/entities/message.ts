@@ -39,6 +39,10 @@ export class Message {
 		this.props = Object.assign(this.props, propsToUpdate)
 	}
 
+	static fromModel(props: MessageProps) {
+		return new Message(props)
+	}
+
 	static create(props: MessageProps): Result<Message> {
 		if (!props.content) {
 			return Result.fail({

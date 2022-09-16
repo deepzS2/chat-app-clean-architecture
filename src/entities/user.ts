@@ -49,6 +49,10 @@ export class User {
 		return bcrypt.hashSync(data, salt)
 	}
 
+	static fromModel(props: UserProps) {
+		return new User(props)
+	}
+
 	static create(props: UserProps): Result<User> {
 		if (!validateEmail(props.email)) {
 			return Result.fail({

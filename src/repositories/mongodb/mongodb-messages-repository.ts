@@ -14,30 +14,29 @@ export class MongoDbMessagesRepository implements MessagesRepository {
 		const messageSchema = new Schema<MessageSchemaProps>({
 			content: { type: String, required: true },
 			createdAt: { type: Date, default: Date.now },
-			authorId: { type: Schema.Types.ObjectId, required: true },
+			authorId: { type: Schema.Types.ObjectId, required: true, ref: 'Users' },
 		})
 
 		this.model = model<MessageSchemaProps>('Messages', messageSchema)
 	}
 
-	private toMessageEntity(id: Types.ObjectId, props: MessageSchemaProps) {
-		return Message.create({
-			...props,
-			authorId: props.authorId.toString(),
-			id: id.toString(),
-		}).getValue()
-	}
-
 	async create(message: Message): Promise<void> {
 		await this.model.create({
-			...message,
+			content: message.content,
+			authorId: message.authorId,
 		})
 	}
 
 	async getAll(): Promise<Message[]> {
 		const results = await this.model.find()
 
-		return results.map((result) => this.toMessageEntity(result._id, result))
+		return results.map((result) =>
+			Message.fromModel({
+				...result.toObject(),
+				authorId: result.authorId.toString(),
+				id: result._id.toString(),
+			})
+		)
 	}
 
 	async getAllOrdered(
@@ -53,7 +52,13 @@ export class MongoDbMessagesRepository implements MessagesRepository {
 				[key]: orderBy,
 			})
 
-		return results.map((result) => this.toMessageEntity(result._id, result))
+		return results.map((result) =>
+			Message.fromModel({
+				...result.toObject(),
+				authorId: result.authorId.toString(),
+				id: result._id.toString(),
+			})
+		)
 	}
 
 	async findById(id: string): Promise<Message | null> {
@@ -61,7 +66,11 @@ export class MongoDbMessagesRepository implements MessagesRepository {
 
 		if (!result) return null
 
-		return this.toMessageEntity(result._id, result)
+		return Message.fromModel({
+			...result.toObject(),
+			authorId: result.authorId.toString(),
+			id: result._id.toString(),
+		})
 	}
 
 	async update(id: string, entity: Partial<Message>): Promise<void> {
