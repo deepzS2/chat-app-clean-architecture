@@ -1,6 +1,7 @@
 import { Model, model, Schema, Types } from 'mongoose'
 
 import { Message, MessageProps } from '@entities/message'
+import { User, UserProps } from '@entities/user'
 import { MessagesRepository } from '@repositories/messages-repository'
 
 type MessageSchemaProps = Omit<MessageProps, 'authorId'> & {
@@ -33,7 +34,7 @@ export class MongoDbMessagesRepository implements MessagesRepository {
 		return results.map((result) =>
 			Message.fromModel({
 				...result.toObject(),
-				authorId: result.authorId.toString(),
+				authorId: result.authorId!.toString(),
 				id: result._id.toString(),
 			})
 		)
@@ -46,6 +47,7 @@ export class MongoDbMessagesRepository implements MessagesRepository {
 	): Promise<Message[]> {
 		const results = await this.model
 			.find()
+			.populate<{ authorId: UserProps & { _id: Types.ObjectId } }>('authorId')
 			.limit(options.limitPerPage)
 			.skip(options.limitPerPage * (options.page - 1))
 			.sort({
@@ -55,8 +57,8 @@ export class MongoDbMessagesRepository implements MessagesRepository {
 		return results.map((result) =>
 			Message.fromModel({
 				...result.toObject(),
-				authorId: result.authorId.toString(),
-				id: result._id.toString(),
+				authorId: result.authorId!._id.toString(),
+				author: User.fromModel(result.authorId!),
 			})
 		)
 	}
