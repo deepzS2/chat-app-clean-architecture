@@ -4,7 +4,7 @@ import { Message } from '@entities/message'
 import { User } from '@entities/user'
 import { InMemoryMessagesRepository } from '@repositories/in-memory/in-memory-messages-repository'
 
-import { MessageUseCaseDTO } from './dto/message-use-case-dto'
+import { MessageDTO } from './dto/message-dto'
 import { GetMessages } from './get-messages'
 
 describe('Get messages', () => {
@@ -29,7 +29,7 @@ describe('Get messages', () => {
 
 		expect(array.length).toBe(1)
 		expect(array).toEqual(
-			expect.arrayContaining([MessageUseCaseDTO.fromEntity(message)])
+			expect.arrayContaining([MessageDTO.fromEntity(message)])
 		)
 	})
 

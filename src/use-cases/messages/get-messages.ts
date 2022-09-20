@@ -3,7 +3,7 @@ import { MessageProps } from '@entities/message'
 import { MessagesRepository } from '@repositories/messages-repository'
 import { Result } from '@shared'
 
-import { MessageUseCaseDTO } from './dto/message-use-case-dto'
+import { MessageDTO } from './dto/message-dto'
 
 interface Request {
 	orderBy?: 'asc' | 'desc'
@@ -12,7 +12,7 @@ interface Request {
 	limitPerPage?: number
 }
 
-type Response = Result<MessageUseCaseDTO[]>
+type Response = Result<MessageDTO[]>
 
 export class GetMessages implements BaseUseCase<Request, Response> {
 	constructor(private readonly messageRepository: MessagesRepository) {}
@@ -28,6 +28,6 @@ export class GetMessages implements BaseUseCase<Request, Response> {
 			limitPerPage,
 		})
 
-		return Result.ok(MessageUseCaseDTO.fromEntityList(messages))
+		return Result.ok(MessageDTO.fromEntityList(messages))
 	}
 }

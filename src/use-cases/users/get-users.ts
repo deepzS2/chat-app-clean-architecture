@@ -2,10 +2,10 @@ import { BaseUseCase } from '@core/base-usecase'
 import { UsersRepository } from '@repositories/users-repository'
 import { Result } from '@shared'
 
-import { UserUseCaseDTO } from './dto/user-use-case-dto'
+import { UserDTO } from './dto/user-dto'
 
 type Request = unknown
-type Response = Result<UserUseCaseDTO[]>
+type Response = Result<UserDTO[]>
 
 export class GetUsers implements BaseUseCase<Request, Response> {
 	constructor(private readonly userRepository: UsersRepository) {}
@@ -13,6 +13,6 @@ export class GetUsers implements BaseUseCase<Request, Response> {
 	async execute(): Promise<Response> {
 		const users = await this.userRepository.getAll()
 
-		return Result.ok(users.map((user) => UserUseCaseDTO.fromEntity(user)))
+		return Result.ok(users.map((user) => UserDTO.fromEntity(user)))
 	}
 }

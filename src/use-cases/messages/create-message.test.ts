@@ -6,7 +6,7 @@ import { InMemoryMessagesRepository } from '@repositories/in-memory/in-memory-me
 import { InMemoryUsersRepository } from '@repositories/in-memory/in-memory-users-repository'
 
 import { CreateMessage } from './create-message'
-import { MessageUseCaseDTO } from './dto/message-use-case-dto'
+import { MessageDTO } from './dto/message-dto'
 import { AuthorInvalid, InvalidMessageProps } from './errors'
 
 describe('Create message', () => {
@@ -28,7 +28,7 @@ describe('Create message', () => {
 		})
 
 		expect(result.isRight()).toBeTruthy()
-		expect(result.value.getValue()).toBeInstanceOf(MessageUseCaseDTO)
+		expect(result.value.getValue()).toBeInstanceOf(MessageDTO)
 	})
 
 	it("Should not create a new message if user don't exists", async () => {

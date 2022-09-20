@@ -3,7 +3,7 @@ import { User } from '@entities/user'
 import { UsersRepository } from '@repositories/users-repository'
 import { Either, left, Result, right } from '@shared'
 
-import { UserUseCaseDTO } from './dto/user-use-case-dto'
+import { UserDTO } from './dto/user-dto'
 import { EmailAlreadyTaken, InvalidUserProps } from './errors'
 
 interface Request {
@@ -12,10 +12,7 @@ interface Request {
 	password: string
 }
 
-type Response = Either<
-	EmailAlreadyTaken | InvalidUserProps,
-	Result<UserUseCaseDTO>
->
+type Response = Either<EmailAlreadyTaken | InvalidUserProps, Result<UserDTO>>
 
 export class CreateUser implements BaseUseCase<Request, Response> {
 	constructor(private readonly userRepository: UsersRepository) {}
@@ -39,6 +36,6 @@ export class CreateUser implements BaseUseCase<Request, Response> {
 
 		await this.userRepository.create(user)
 
-		return right(Result.ok(UserUseCaseDTO.fromEntity(user)))
+		return right(Result.ok(UserDTO.fromEntity(user)))
 	}
 }

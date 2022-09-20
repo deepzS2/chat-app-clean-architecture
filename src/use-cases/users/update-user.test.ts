@@ -3,7 +3,7 @@ import { it, describe, expect } from 'vitest'
 import { User } from '@entities/user'
 import { InMemoryUsersRepository } from '@repositories/in-memory/in-memory-users-repository'
 
-import { UserUseCaseDTO } from './dto/user-use-case-dto'
+import { UserDTO } from './dto/user-dto'
 import { UpdateUser } from './update-user'
 
 describe('Update user', () => {
@@ -29,7 +29,7 @@ describe('Update user', () => {
 
 		const value = result.value.getValue()
 
-		expect(value).toBeInstanceOf(UserUseCaseDTO)
-		expect((value as UserUseCaseDTO).email).toBe('anotheremail@email.com')
+		expect(value).toBeInstanceOf(UserDTO)
+		expect((value as UserDTO).email).toBe('anotheremail@email.com')
 	})
 })

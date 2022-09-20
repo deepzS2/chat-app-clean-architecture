@@ -2,7 +2,7 @@ import { BaseUseCase } from '@core/base-usecase'
 import { UsersRepository } from '@repositories/users-repository'
 import { Either, left, Result, right } from '@shared'
 
-import { UserUseCaseDTO } from './dto/user-use-case-dto'
+import { UserDTO } from './dto/user-dto'
 import { UserMissingParams, UserNotFound } from './errors'
 
 interface Request {
@@ -10,7 +10,7 @@ interface Request {
 	id?: string
 }
 
-type Response = Either<UserNotFound | UserMissingParams, Result<UserUseCaseDTO>>
+type Response = Either<UserNotFound | UserMissingParams, Result<UserDTO>>
 
 export class GetUser implements BaseUseCase<Request, Response> {
 	constructor(private readonly userRepository: UsersRepository) {}
@@ -28,6 +28,6 @@ export class GetUser implements BaseUseCase<Request, Response> {
 				id ? UserNotFound.createById(id) : UserNotFound.createByEmail(email!)
 			)
 
-		return right(Result.ok(UserUseCaseDTO.fromEntity(user)))
+		return right(Result.ok(UserDTO.fromEntity(user)))
 	}
 }
