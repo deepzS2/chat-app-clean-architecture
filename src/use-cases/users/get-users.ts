@@ -1,17 +1,18 @@
 import { BaseUseCase } from '@core/base-usecase'
-import { User } from '@entities/user'
 import { UsersRepository } from '@repositories/users-repository'
 import { Result } from '@shared'
 
+import { UserUseCaseDTO } from './dto/user-use-case-dto'
+
 type Request = unknown
-type Response = Result<User[]>
+type Response = Result<UserUseCaseDTO[]>
 
 export class GetUsers implements BaseUseCase<Request, Response> {
 	constructor(private readonly userRepository: UsersRepository) {}
 
-	async execute(): Promise<Result<User[]>> {
-		const user = await this.userRepository.getAll()
+	async execute(): Promise<Response> {
+		const users = await this.userRepository.getAll()
 
-		return Result.ok(user)
+		return Result.ok(users.map((user) => UserUseCaseDTO.fromEntity(user)))
 	}
 }

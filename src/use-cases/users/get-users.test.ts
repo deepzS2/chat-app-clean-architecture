@@ -3,6 +3,7 @@ import { it, describe, expect } from 'vitest'
 import { User } from '@entities/user'
 import { InMemoryUsersRepository } from '@repositories/in-memory/in-memory-users-repository'
 
+import { UserUseCaseDTO } from './dto/user-use-case-dto'
 import { GetUsers } from './get-users'
 
 describe('Get users', () => {
@@ -21,7 +22,9 @@ describe('Get users', () => {
 		const array = result.getValue()
 
 		expect(array.length).toBe(1)
-		expect(array).toEqual(expect.arrayContaining([user]))
+		expect(array).toEqual(
+			expect.arrayContaining([UserUseCaseDTO.fromEntity(user)])
+		)
 	})
 
 	it('Should return an empty array if no users registered yet', async () => {

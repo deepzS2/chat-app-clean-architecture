@@ -3,6 +3,7 @@ import { MessagesRepository } from '@repositories/messages-repository'
 import { UsersRepository } from '@repositories/users-repository'
 import { Either, left, Result, right } from '@shared'
 
+import { MessageUseCaseDTO } from './dto/message-use-case-dto'
 import { AuthorInvalid, InvalidMessageProps, NoMessageContent } from './errors'
 
 interface CreateUserRequest {
@@ -12,7 +13,7 @@ interface CreateUserRequest {
 
 type CreateUserResponse = Either<
 	NoMessageContent | AuthorInvalid | InvalidMessageProps,
-	Result<Message>
+	Result<MessageUseCaseDTO>
 >
 
 export class CreateMessage {
@@ -43,6 +44,6 @@ export class CreateMessage {
 
 		await this.messageRepository.create(message)
 
-		return right(Result.ok(message))
+		return right(Result.ok(MessageUseCaseDTO.fromEntity(message)))
 	}
 }

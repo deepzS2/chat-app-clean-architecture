@@ -1,8 +1,8 @@
 import { BaseUseCase } from '@core/base-usecase'
-import { User } from '@entities/user'
 import { UsersRepository } from '@repositories/users-repository'
 import { Either, JsonWebToken, left, Result, right } from '@shared'
 
+import { UserUseCaseDTO } from './dto/user-use-case-dto'
 import { InvalidCredentials, UserNotFound } from './errors'
 
 interface Request {
@@ -13,7 +13,7 @@ interface Request {
 type Response = Either<
 	UserNotFound | InvalidCredentials,
 	Result<{
-		user: User
+		user: UserUseCaseDTO
 		token: string
 	}>
 >
@@ -39,7 +39,7 @@ export class LoginUser implements BaseUseCase<Request, Response> {
 
 		return right(
 			Result.ok({
-				user: userExists,
+				user: UserUseCaseDTO.fromEntity(userExists),
 				token,
 			})
 		)

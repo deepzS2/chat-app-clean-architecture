@@ -3,6 +3,7 @@ import { User } from '@entities/user'
 import { UsersRepository } from '@repositories/users-repository'
 import { Either, left, Result, right } from '@shared'
 
+import { UserUseCaseDTO } from './dto/user-use-case-dto'
 import { UserMissingParams, UserNotFound } from './errors'
 
 interface Request {
@@ -10,7 +11,7 @@ interface Request {
 	data: Partial<User>
 }
 
-type Response = Either<UserNotFound | UserMissingParams, Result<User>>
+type Response = Either<UserNotFound | UserMissingParams, Result<UserUseCaseDTO>>
 
 export class UpdateUser implements BaseUseCase<Request, Response> {
 	constructor(private readonly userRepository: UsersRepository) {}
@@ -24,6 +25,6 @@ export class UpdateUser implements BaseUseCase<Request, Response> {
 
 		await this.userRepository.update(id, data)
 
-		return right(Result.ok(user))
+		return right(Result.ok(UserUseCaseDTO.fromEntity(user)))
 	}
 }

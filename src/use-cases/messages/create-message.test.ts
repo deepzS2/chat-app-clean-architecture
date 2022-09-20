@@ -1,12 +1,12 @@
 import { v4 as uuid } from 'uuid'
 import { describe, expect, it } from 'vitest'
 
-import { Message } from '@entities/message'
 import { User } from '@entities/user'
 import { InMemoryMessagesRepository } from '@repositories/in-memory/in-memory-messages-repository'
 import { InMemoryUsersRepository } from '@repositories/in-memory/in-memory-users-repository'
 
 import { CreateMessage } from './create-message'
+import { MessageUseCaseDTO } from './dto/message-use-case-dto'
 import { AuthorInvalid, InvalidMessageProps } from './errors'
 
 describe('Create message', () => {
@@ -28,7 +28,7 @@ describe('Create message', () => {
 		})
 
 		expect(result.isRight()).toBeTruthy()
-		expect(result.value.getValue()).toBeInstanceOf(Message)
+		expect(result.value.getValue()).toBeInstanceOf(MessageUseCaseDTO)
 	})
 
 	it("Should not create a new message if user don't exists", async () => {
