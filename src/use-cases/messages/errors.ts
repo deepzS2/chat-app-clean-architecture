@@ -25,6 +25,18 @@ export class NoMessageContent extends Result<DomainError> {
 	}
 }
 
+export class MessageNotFound extends Result<DomainError> {
+	private constructor(id: string) {
+		super(false, {
+			message: `Message not found with that id ${id}`,
+		})
+	}
+
+	public static create(id: string): MessageNotFound {
+		return new MessageNotFound(id)
+	}
+}
+
 export class InvalidMessageProps extends Result<DomainError> {
 	private constructor(propsInvalid: Message) {
 		super(false, {

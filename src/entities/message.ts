@@ -35,6 +35,10 @@ export class Message {
 		return this.props.createdAt!
 	}
 
+	setAuthor(value: User) {
+		this.props.author = value
+	}
+
 	update(propsToUpdate: Partial<Omit<MessageProps, 'id'>>) {
 		this.props = Object.assign(this.props, propsToUpdate)
 	}
