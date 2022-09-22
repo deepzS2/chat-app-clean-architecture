@@ -37,6 +37,18 @@ export class MessageNotFound extends Result<DomainError> {
 	}
 }
 
+export class UnauthorizedOwner extends Result<DomainError> {
+	private constructor() {
+		super(false, {
+			message: `You're not the owner of this message!`,
+		})
+	}
+
+	public static create(): UnauthorizedOwner {
+		return new UnauthorizedOwner()
+	}
+}
+
 export class InvalidMessageProps extends Result<DomainError> {
 	private constructor(propsInvalid: Message) {
 		super(false, {
