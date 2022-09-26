@@ -3,7 +3,8 @@ import mongoose from 'mongoose'
 import { Server } from 'socket.io'
 
 import Application from './application'
-import { CORS_OPTIONS, MONGODB_URL, PORT } from './config'
+import { CORS_OPTIONS, HOST, MONGODB_URL, PORT } from './config'
+import { logger } from './shared/loggers'
 
 async function bootstrap() {
 	await mongoose.connect(MONGODB_URL)
@@ -18,9 +19,9 @@ async function bootstrap() {
 	)
 	app.registerControllers()
 
-	server.listen(PORT, () => {
-		console.log(`http://localhost:${PORT}`)
-	})
+	server.listen(PORT, HOST)
+
+	logger.info(`Running on http://${HOST}:${PORT}`)
 }
 
 bootstrap()

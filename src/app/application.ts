@@ -1,5 +1,5 @@
 import cors from 'cors'
-import express from 'express'
+import express, { ErrorRequestHandler } from 'express'
 import helmet from 'helmet'
 import { Server } from 'socket.io'
 
@@ -14,6 +14,7 @@ import { CORS_OPTIONS, SECRET, TTL } from './config'
 import { MessagesController } from './controllers/messages-controller'
 import { UsersController } from './controllers/users-controller'
 import { onConnection } from './events/connection'
+import { expressErrorLogger, expressLogger } from './shared/loggers'
 
 export default class Application {
 	public readonly instance = express()
@@ -61,6 +62,9 @@ export default class Application {
 		// Register controllers
 		this.instance.use('/users', usersController.router)
 		this.instance.use('/messages', messagesController.router)
+
+		// Errors handlers
+		this.instance.use(this.createErrorHandler())
 	}
 
 	private setup() {
@@ -71,6 +75,9 @@ export default class Application {
 		// Helmet and CORS
 		this.instance.use(helmet())
 		this.instance.use(cors(CORS_OPTIONS))
+
+		// Logger
+		this.instance.use(expressLogger)
 	}
 
 	private registerServices() {
@@ -78,5 +85,13 @@ export default class Application {
 		this.usersRepository = new MongoDbUsersRepository()
 		this.messagesRepository = new MongoDbMessagesRepository()
 		this.jsonWebToken = new JsonWebToken(SECRET, TTL)
+	}
+
+	private createErrorHandler(): ErrorRequestHandler {
+		return (err, req, res, next) => {
+			expressErrorLogger(err, req, res, next)
+
+			res.status(500).send(err)
+		}
 	}
 }
