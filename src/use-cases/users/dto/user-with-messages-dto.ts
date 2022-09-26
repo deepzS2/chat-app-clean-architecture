@@ -1,6 +1,6 @@
 import { Message } from '@entities/message'
 import { User } from '@entities/user'
-import { MessageDTO } from '@use-cases/messages/dto/message-use-case-dto'
+import { MessageDTO } from '@use-cases/messages/dto/message-dto'
 
 export class UserWithMessagesDTO {
 	constructor(
