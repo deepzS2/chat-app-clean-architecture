@@ -1,5 +1,5 @@
 import cors from 'cors'
-import express, { ErrorRequestHandler } from 'express'
+import express, { ErrorRequestHandler, RequestHandler } from 'express'
 import helmet from 'helmet'
 import { Server } from 'socket.io'
 
@@ -63,6 +63,9 @@ export default class Application {
 		this.instance.use('/users', usersController.router)
 		this.instance.use('/messages', messagesController.router)
 
+		// Health check
+		this.instance.get('/health', this.createHealthCheck())
+
 		// Errors handlers
 		this.instance.use(this.createErrorHandler())
 	}
@@ -92,6 +95,23 @@ export default class Application {
 			expressErrorLogger(err, req, res, next)
 
 			res.status(500).send(err)
+		}
+	}
+
+	private createHealthCheck(): RequestHandler {
+		return (_req, res, _next) => {
+			const healthcheck = {
+				uptime: process.uptime(),
+				message: 'OK',
+				timestamp: new Date().toISOString(),
+			}
+
+			try {
+				res.send(healthcheck)
+			} catch (error) {
+				healthcheck['message'] = (error as Error).message
+				res.status(503).send()
+			}
 		}
 	}
 }

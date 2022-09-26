@@ -49,14 +49,18 @@ export class MongoDbUsersRepository implements UsersRepository {
 	}
 
 	async findById(id: string): Promise<User | null> {
-		const result = await this.model.findById(id)
+		try {
+			const result = await this.model.findById(id)
 
-		if (!result) return null
+			if (!result) return null
 
-		return User.fromModel({
-			...result.toObject(),
-			id: result._id.toString(),
-		})
+			return User.fromModel({
+				...result.toObject(),
+				id: result._id.toString(),
+			})
+		} catch (error) {
+			return null
+		}
 	}
 
 	async update(id: string, entity: Partial<User>): Promise<void> {

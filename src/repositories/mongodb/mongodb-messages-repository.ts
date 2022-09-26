@@ -64,15 +64,19 @@ export class MongoDbMessagesRepository implements MessagesRepository {
 	}
 
 	async findById(id: string): Promise<Message | null> {
-		const result = await this.model.findById(id)
+		try {
+			const result = await this.model.findById(id)
 
-		if (!result) return null
+			if (!result) return null
 
-		return Message.fromModel({
-			...result.toObject(),
-			authorId: result.authorId.toString(),
-			id: result._id.toString(),
-		})
+			return Message.fromModel({
+				...result.toObject(),
+				authorId: result.authorId.toString(),
+				id: result._id.toString(),
+			})
+		} catch (error) {
+			return null
+		}
 	}
 
 	async update(id: string, entity: Partial<Message>): Promise<void> {
