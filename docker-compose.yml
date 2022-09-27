@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   api:
-    build: .
+    build: ./Dockerfile
     ports:
       - 8080:8080
     environment:
@@ -12,9 +12,9 @@ services:
       SECRET: MyProductionSecret
       TTL: 7d
     volumes:
-      - ./dist:/usr/src/app/dist
-      - ./node_modules:/usr/src/app/node_modules
-      - ./logs:/usr/src/app/logs
+      - ./backend/dist:/usr/src/app/dist
+      - ./backend/node_modules:/usr/src/app/node_modules
+      - ./backend-logs:/usr/src/app/logs
     depends_on:
       - mongo
 
