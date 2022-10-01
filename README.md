@@ -37,6 +37,7 @@ The software in this layer is a set of adapters that convert data from the forma
 - etc.
 
 ### Frameworks and Drivers.
+The outermost layer is generally composed of frameworks and tools such as the Database, the Web Framework, etc. Generally you don’t write much code in this layer other than glue code that communicates to the next circle inwards.
 - [Express](https://expressjs.com/pt-br/);
 - [Socket.io](https://socket.io/);
 - etc.
