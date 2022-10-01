@@ -1,11 +1,13 @@
+import type { NextPage } from 'next'
+
 import Layout from '@components/Layout'
 
-const IndexPage = () => {
+const Index: NextPage = () => {
 	return (
 		<Layout title="Home | Next.js + TypeScript Example">
-			<h1>Hello Next.js 👋</h1>
+			<h1 className="font-bold">Hello Next.js 👋</h1>
 		</Layout>
 	)
 }
 
-export default IndexPage
+export default Index
