@@ -17,18 +17,11 @@ RUN \
 FROM node:lts-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV development
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-USER nextjs
 
 EXPOSE 3000
 
 ENV PORT 3000
 
-CMD ["yarn", "start"]
+CMD ["yarn", "dev"]
