@@ -1,11 +1,103 @@
 import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { useEffect, useState } from 'react'
+import { useSocket, useSocketEvent } from 'socket.io-react-hook'
 
+import Button from '@components/Button'
+import Input from '@components/Input'
 import Layout from '@components/Layout'
+import Loading from '@components/Loading'
+import { useAuthentication } from '@contexts/authentication.context'
+import { Message } from '@interfaces/index'
+import api from '@services/api'
+import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
 
 const Index: NextPage = () => {
+	const queryClient = useQueryClient()
+	const router = useRouter()
+	const { user, token } = useAuthentication()
+	const { socket } = useSocket('http://localhost:8080', {
+		auth: {
+			token,
+		},
+	})
+	const { lastMessage } = useSocketEvent<Message>(socket, 'MESSAGE_CREATED')
+
+	const [contentInput, setContentInput] = useState('')
+
+	const query = useQuery(['messages'], async () => {
+		const result = await api.get<Message[]>('/messages')
+
+		return result.data
+	})
+	const messageMutation = useMutation(
+		async (content: string) => {
+			await api.post('/messages', { content })
+		},
+		{
+			onSuccess: () => {
+				queryClient.invalidateQueries(['messages'])
+			},
+		}
+	)
+
+	useEffect(() => {
+		if (lastMessage) query?.data?.push(lastMessage)
+	}, [lastMessage, query])
+
+	useEffect(() => {
+		if (!user) {
+			router.push('/login')
+		}
+	}, [router, user])
+
 	return (
-		<Layout title="Home | Next.js + TypeScript Example">
-			<h1 className="font-bold">Hello Next.js 👋</h1>
+		<Layout title="Chat App">
+			<main className="relative w-full px-[152px] min-h-screen flex flex-col items-center mb-4">
+				<div className="max-h-[90%] w-full flex flex-col items-center gap-7">
+					{query.isLoading || query.isError ? (
+						<Loading />
+					) : query.data.length ? (
+						query.data.map((message) => (
+							<div key={message.id} className="flex flex-col w-full gap-2">
+								<div className="flex items-center">
+									<span className="min-w-[176px] font-poppins font-bold text-base text-neutral-100">
+										{message.author.username ?? 'User'}
+									</span>
+									<span className="min-w-[176px] font-poppins font-bold text-base text-neutral-100">
+										{new Date(message.createdAt).toLocaleString()}
+									</span>
+								</div>
+								<p className="font-poppins font-bold w-full text-neutral-100 text-xs">
+									{message.content}
+								</p>
+							</div>
+						))
+					) : (
+						<h1 className="font-poppins font-bold text-xl text-neutral-100">
+							No messages yet :D
+						</h1>
+					)}
+				</div>
+				<div className="absolute px-[152px] bottom-0 w-full flex items-center gap-4">
+					<div className="flex-[3]">
+						<Input
+							type="text"
+							minLength={3}
+							value={contentInput}
+							onChange={(e) => setContentInput(e.target.value)}
+						/>
+					</div>
+					<div className="min-w-[176px]">
+						<Button
+							onClick={() => messageMutation.mutate(contentInput)}
+							variant="primary"
+						>
+							Send
+						</Button>
+					</div>
+				</div>
+			</main>
 		</Layout>
 	)
 }
