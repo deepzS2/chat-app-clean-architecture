@@ -9,7 +9,7 @@ interface IAuthenticationValue {
 }
 
 interface IAuthenticationContext extends IAuthenticationValue {
-	login: (email: string, password: string) => Promise<void>
+	login: (email: string, password: string) => Promise<IAuthenticationValue>
 	logout: () => void
 }
 
@@ -33,10 +33,16 @@ export function AuthenticationProvider({ children }: { children: ReactNode }) {
 			password,
 		})
 
-		setState({
+		const stateResult = {
 			token: data.token,
 			user: data.user,
-		})
+		}
+
+		setState(stateResult)
+
+		api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`
+
+		return stateResult
 	}
 
 	const logout = () => setState(initialState)
