@@ -43,5 +43,21 @@ The outermost layer is generally composed of frameworks and tools such as the Da
 - [Socket.io](https://socket.io/);
 - etc.
 
+## How to test?
+If you want to test the use cases inside the [backend](backend/) folder, you can simply:
+```bash
+cd backend && yarn test
+```
+You should see the tests running blazingly fast, it is thanks to [Vitest](https://vitest.dev/) which is a great unit test framework (works just like [Jest](https://jestjs.io/pt-BR/)).
+
+## How I can use it?
+Thanks to [Docker](https://www.docker.com/), it is easy to run the project database, backend and frontend at the same time. You can simply run:
+```bash
+docker-compose up
+# OR if you want without console
+docker-compose up -d
+```
+And then go to http://localhost:8080/ to check the project API or go to http://localhost:3000/ to check the project frontend.
+
 ## Show your support
 Give this project a ⭐ if you like to support me to make more projects like this!
