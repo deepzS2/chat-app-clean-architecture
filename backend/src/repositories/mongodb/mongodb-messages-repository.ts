@@ -59,6 +59,7 @@ export class MongoDbMessagesRepository implements MessagesRepository {
 				...result.toObject(),
 				authorId: result.authorId!._id.toString(),
 				author: User.fromModel(result.authorId!),
+				id: result._id.toString(),
 			})
 		)
 	}
