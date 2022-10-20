@@ -16,7 +16,7 @@ services:
     volumes:
       - ./backend/dist:/usr/src/app/dist
       - ./backend/node_modules:/usr/src/app/node_modules
-      - ../backend-logs:/usr/src/app/logs
+      - ./backend-logs:/usr/src/app/logs
     depends_on:
       - mongo
 
