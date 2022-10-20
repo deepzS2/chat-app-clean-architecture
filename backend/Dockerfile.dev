@@ -12,11 +12,10 @@ RUN mkdir logs
 COPY package.json ./
 COPY yarn.lock ./
 
-RUN yarn install --production=true
+COPY . ./
 
-# Bundle app source
-COPY ./src ./
+RUN yarn install
 
 EXPOSE 8080
 
-CMD [ "node", "dist/app/server.js" ]
+CMD [ "yarn", "dev" ]
