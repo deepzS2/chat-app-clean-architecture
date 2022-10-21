@@ -20,11 +20,10 @@ export class MessagesController extends BaseController {
 		private readonly io: Server,
 		private readonly messagesRepository: MessagesRepository,
 		private readonly usersRepository: UsersRepository,
-		jsonWebToken: JsonWebToken
+		jsonWebToken: JsonWebToken,
+		authMiddleware: AuthMiddleware
 	) {
 		super()
-
-		const authMiddleware = new AuthMiddleware(usersRepository, jsonWebToken)
 
 		this.router.get(
 			'/',

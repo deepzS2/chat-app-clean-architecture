@@ -1,9 +1,8 @@
 import http from 'http'
 import mongoose from 'mongoose'
-import { Server } from 'socket.io'
 
 import Application from './application'
-import { CORS_OPTIONS, HOST, MONGODB_URL, PORT } from './config'
+import { HOST, MONGODB_URL, PORT } from './config'
 import { logger } from './shared/loggers'
 
 async function bootstrap() {
@@ -12,16 +11,12 @@ async function bootstrap() {
 	const app = new Application()
 	const server = http.createServer(app.instance)
 
-	await app.registerWebSocket(
-		new Server(server, {
-			cors: CORS_OPTIONS,
-		})
-	)
+	app.registerWebSocket(server)
 	app.registerControllers()
 
-	server.listen(PORT, HOST)
-
-	logger.info(`Running on http://${HOST}:${PORT}`)
+	server.listen(PORT, HOST, () => {
+		logger.info(`Running on http://${HOST}:${PORT}`)
+	})
 }
 
 bootstrap()

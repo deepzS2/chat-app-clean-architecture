@@ -1,6 +1,7 @@
 import cors from 'cors'
 import express, { ErrorRequestHandler, RequestHandler } from 'express'
 import helmet from 'helmet'
+import http from 'http'
 import { Server } from 'socket.io'
 
 import { MessagesRepository } from '@repositories/messages-repository'
@@ -14,6 +15,7 @@ import { CORS_OPTIONS, SECRET, TTL } from './config'
 import { MessagesController } from './controllers/messages-controller'
 import { UsersController } from './controllers/users-controller'
 import { onConnection } from './events/connection'
+import { AuthMiddleware } from './middlewares/auth.middleware'
 import { expressErrorLogger, expressLogger } from './shared/loggers'
 
 export default class Application {
@@ -24,27 +26,25 @@ export default class Application {
 	private usersRepository!: UsersRepository
 	private messagesRepository!: MessagesRepository
 	private jsonWebToken!: JsonWebToken
+	private authMiddleware!: AuthMiddleware
 
 	constructor() {
 		this.setup()
 		this.registerServices()
 	}
 
-	async registerWebSocket(io: Server) {
+	registerWebSocket(http: http.Server) {
+		const io = new Server(http, {
+			cors: CORS_OPTIONS,
+		})
+
+		io.use(this.authMiddleware.websocketHandle.bind(this.authMiddleware))
+
+		io.on('connection', (socket) => {
+			onConnection(this.io, socket)
+		})
+
 		this.io = io
-
-		this.io.use(
-			authorize({
-				secret: SECRET,
-				onAuthentication: async (decodedToken) => {
-					const user = await this.usersRepository.findById(decodedToken.id)
-
-					return user
-				},
-			})
-		)
-
-		this.io.on('connection', (socket) => onConnection(this.io, socket))
 	}
 
 	registerControllers() {
@@ -56,7 +56,8 @@ export default class Application {
 			this.io,
 			this.messagesRepository,
 			this.usersRepository,
-			this.jsonWebToken
+			this.jsonWebToken,
+			this.authMiddleware
 		)
 
 		// Register controllers
@@ -88,6 +89,10 @@ export default class Application {
 		this.usersRepository = new MongoDbUsersRepository()
 		this.messagesRepository = new MongoDbMessagesRepository()
 		this.jsonWebToken = new JsonWebToken(SECRET, TTL)
+		this.authMiddleware = new AuthMiddleware(
+			this.usersRepository,
+			this.jsonWebToken
+		)
 	}
 
 	private createErrorHandler(): ErrorRequestHandler {
