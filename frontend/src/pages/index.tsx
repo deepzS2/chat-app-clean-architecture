@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 
 import Button from '@components/Button'
-import Input from '@components/Input'
+import InputWithEmoji from '@components/InputWithEmoji'
 import Layout from '@components/Layout'
 import Loading from '@components/Loading'
 import { useAuthentication } from '@contexts/authentication.context'
@@ -79,7 +79,10 @@ const Index: NextPage = () => {
 				</div>
 				<div className="absolute px-[152px] bottom-0 w-full flex items-center gap-4">
 					<div className="flex-[3]">
-						<Input
+						<InputWithEmoji
+							onAddEmoji={(emoji) =>
+								setContentInput(`${contentInput}${emoji.native}`)
+							}
 							type="text"
 							minLength={3}
 							value={contentInput}

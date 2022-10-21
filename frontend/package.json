@@ -7,8 +7,11 @@
     "type-check": "tsc"
   },
   "dependencies": {
+    "@emoji-mart/data": "^1.0.6",
+    "@emoji-mart/react": "^1.0.1",
     "@tanstack/react-query": "^4.12.0",
     "axios": "^0.27.2",
+    "emoji-mart": "^5.2.2",
     "next": "^12.3.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -17,6 +20,7 @@
     "socket.io-react-hook": "^1.0.17"
   },
   "devDependencies": {
+    "@types/emoji-mart": "^3.0.9",
     "@types/node": "^18.7.18",
     "@types/react": "^18.0.20",
     "@types/react-dom": "^18.0.6",
