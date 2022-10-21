@@ -1,13 +1,13 @@
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { useSocket, useSocketEvent } from 'socket.io-react-hook'
 
 import Button from '@components/Button'
 import Input from '@components/Input'
 import Layout from '@components/Layout'
 import Loading from '@components/Loading'
 import { useAuthentication } from '@contexts/authentication.context'
+import { useSocket } from '@hooks/useSocket'
 import { Message } from '@interfaces/index'
 import api from '@services/api'
 import { useQuery, useQueryClient, useMutation } from '@tanstack/react-query'
@@ -16,34 +16,16 @@ const Index: NextPage = () => {
 	const queryClient = useQueryClient()
 	const router = useRouter()
 	const { user, token } = useAuthentication()
-	const { socket } = useSocket('http://localhost:8080', {
-		auth: {
-			token,
-		},
-	})
-	const { lastMessage } = useSocketEvent<Message>(socket, 'MESSAGE_CREATED')
-
 	const [contentInput, setContentInput] = useState('')
+	const socket = useSocket(token)
 
-	const query = useQuery(['messages'], async () => {
-		const result = await api.get<Message[]>('/messages')
-
-		return result.data
-	})
-	const messageMutation = useMutation(
-		async (content: string) => {
-			await api.post('/messages', { content })
-		},
-		{
-			onSuccess: () => {
-				queryClient.invalidateQueries(['messages'])
-			},
-		}
+	const query = useQuery(
+		['messages'],
+		async () => (await api.get<Message[]>('/messages')).data
 	)
-
-	useEffect(() => {
-		if (lastMessage) query?.data?.push(lastMessage)
-	}, [lastMessage, query])
+	const messageMutation = useMutation(
+		async (content: string) => await api.post('/messages', { content })
+	)
 
 	useEffect(() => {
 		if (!user) {
@@ -51,10 +33,26 @@ const Index: NextPage = () => {
 		}
 	}, [router, user])
 
+	useEffect(() => {
+		const addMessageToQueryData = (message: Message) =>
+			queryClient.setQueryData<Message[]>(['messages'], (data) => [
+				...data,
+				message,
+			])
+
+		socket?.on('MESSAGE_CREATED', addMessageToQueryData)
+		socket?.on('USER_JOINED', addMessageToQueryData)
+
+		return () => {
+			socket?.off('MESSAGE_CREATED')
+			socket?.off('USER_JOINED')
+		}
+	}, [queryClient, socket])
+
 	return (
 		<Layout title="Chat App">
 			<main className="relative w-full px-[152px] min-h-screen flex flex-col items-center mb-4">
-				<div className="max-h-[90%] w-full flex flex-col items-center gap-7">
+				<div className="max-h-[80vh] overflow-y-scroll w-full flex flex-col items-center gap-7">
 					{query.isLoading || query.isError ? (
 						<Loading />
 					) : query.data.length ? (
@@ -62,7 +60,7 @@ const Index: NextPage = () => {
 							<div key={message.id} className="flex flex-col w-full gap-2">
 								<div className="flex items-center">
 									<span className="min-w-[176px] font-poppins font-bold text-base text-neutral-100">
-										{message.author.username ?? 'User'}
+										{message.author?.username ?? 'Server'}
 									</span>
 									<span className="min-w-[176px] font-poppins font-bold text-base text-neutral-100">
 										{new Date(message.createdAt).toLocaleString()}
